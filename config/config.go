@@ -4,6 +4,7 @@ import "github.com/ilyakaznacheev/cleanenv"
 
 type Config struct {
 	Postgres
+	Server
 }
 
 func Load() (*Config, error) {
