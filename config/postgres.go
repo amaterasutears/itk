@@ -2,6 +2,7 @@ package config
 
 import (
 	"errors"
+	"fmt"
 )
 
 var (
@@ -52,4 +53,16 @@ type Postgres struct {
 	Host     string  `env:"POSTGRES_HOST" env-required`
 	Port     int     `env:"POSTGRES_PORT" env-required`
 	SSLMode  SSLMode `env:"POSTGRES_SSL_MODE" env-required`
+}
+
+func (p *Postgres) DataSourceName() string {
+	return fmt.Sprintf(
+		"postgres://%s:%s@%s:%d/%s?sslmode=%s",
+		p.User,
+		p.Password,
+		p.Host,
+		p.Port,
+		p.DB,
+		p.SSLMode,
+	)
 }
