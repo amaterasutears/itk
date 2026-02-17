@@ -24,7 +24,7 @@ func main() {
 		panic(err)
 	}
 
-	pctx, pcancel := context.WithTimeout(ctx, 5*time.Second)
+	pctx, pcancel := context.WithTimeout(ctx, time.Duration(c.Postgres.PingTimeout)*time.Second)
 	defer pcancel()
 
 	err = pgc.Ping(pctx)

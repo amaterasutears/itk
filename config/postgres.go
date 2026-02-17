@@ -47,12 +47,13 @@ func (s *SSLMode) UnmarshalText(text []byte) error {
 }
 
 type Postgres struct {
-	User     string  `env:"POSTGRES_USER" env-required`
-	Password string  `env:"POSTGRES_PASSWORD" env-required`
-	DB       string  `env:"POSTGRES_DB" env-required`
-	Host     string  `env:"POSTGRES_HOST" env-required`
-	Port     int     `env:"POSTGRES_PORT" env-required`
-	SSLMode  SSLMode `env:"POSTGRES_SSL_MODE" env-required`
+	User        string  `env:"POSTGRES_USER" env-required`
+	Password    string  `env:"POSTGRES_PASSWORD" env-required`
+	DB          string  `env:"POSTGRES_DB" env-required`
+	Host        string  `env:"POSTGRES_HOST" env-required`
+	Port        int     `env:"POSTGRES_PORT" env-required`
+	SSLMode     SSLMode `env:"POSTGRES_SSL_MODE" env-required`
+	PingTimeout int     `env:"POSTGRES_PING_TIMEOUT_SEC" env-default:"5"`
 }
 
 func (p *Postgres) DataSourceName() string {
