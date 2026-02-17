@@ -9,8 +9,12 @@ import (
 
 	"github.com/amaterasutears/itk/config"
 	sqlc "github.com/amaterasutears/itk/internal/client/sql"
+	wallet_handler "github.com/amaterasutears/itk/internal/http/handler/wallet"
 	"github.com/amaterasutears/itk/internal/http/router"
 	"github.com/amaterasutears/itk/internal/http/server"
+	wallet_service "github.com/amaterasutears/itk/internal/service/wallet"
+	"github.com/amaterasutears/itk/internal/storage/migrator"
+	wallet_storage "github.com/amaterasutears/itk/internal/storage/wallet"
 )
 
 func main() {
@@ -35,7 +39,24 @@ func main() {
 		panic(err)
 	}
 
-	r := router.New()
+	mr, err := migrator.New(pgc.DB())
+	if err != nil {
+		panic(err)
+	}
+
+	mctx, mcancel := context.WithTimeout(ctx, time.Duration(c.Migrator.TimeoutSec)*time.Second)
+	defer mcancel()
+
+	err = mr.Up(mctx)
+	if err != nil {
+		panic(err)
+	}
+
+	wstorage := wallet_storage.New(pgc.DB())
+	wservice := wallet_service.New(wstorage)
+	whandler := wallet_handler.New(wservice)
+
+	r := router.New(whandler)
 
 	srv := server.New(r, &c.Server)
 

@@ -5,6 +5,7 @@ import "github.com/ilyakaznacheev/cleanenv"
 type Config struct {
 	Postgres
 	Server
+	Migrator
 }
 
 func Load() (*Config, error) {
