@@ -30,6 +30,7 @@ func (r *Router) Register(g *echo.Group) {
 	apiv1g := g.Group("/api/v1")
 	// wallets
 	apiv1g.POST("/wallets", r.w.Create)
+	apiv1g.GET("/wallets/:id", r.w.Balance)
 	// transactions
 	apiv1g.POST("/transactions", r.t.Create)
 }

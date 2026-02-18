@@ -7,6 +7,7 @@ import (
 	"github.com/amaterasutears/itk/internal/model/transaction"
 	"github.com/amaterasutears/itk/internal/model/wallet"
 	"github.com/amaterasutears/itk/internal/storage/transactor"
+	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -73,4 +74,22 @@ func (s *Storage) Update(ctx context.Context, t *transaction.Transaction) error 
 	}
 
 	return nil
+}
+
+func (s *Storage) Balance(ctx context.Context, wid uuid.UUID) (int, error) {
+	selectb := psql.Select("balance").From(table).Where(squirrel.Eq{"id": wid})
+
+	query, args, err := selectb.ToSql()
+	if err != nil {
+		return 0, err
+	}
+
+	var b int
+
+	err = transactor.Executor(ctx, s.db).QueryRowxContext(ctx, query, args...).Scan(&b)
+	if err != nil {
+		return 0, err
+	}
+
+	return b, nil
 }

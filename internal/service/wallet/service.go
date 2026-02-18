@@ -25,3 +25,7 @@ func (s *Service) Create(ctx context.Context) (*wallet.Wallet, error) {
 
 	return s.ws.Insert(ctx, wallet.New(uuid))
 }
+
+func (s *Service) Balance(ctx context.Context, wid uuid.UUID) (int, error) {
+	return s.ws.Balance(ctx, wid)
+}

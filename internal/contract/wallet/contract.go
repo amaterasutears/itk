@@ -18,3 +18,13 @@ func NewCreateWalletResponse(w *wallet.Wallet) *CreateWalletResponse {
 		CreatedAt: w.CreatedAt,
 	}
 }
+
+type BalanceResponse struct {
+	Balance int `json:"balance"`
+}
+
+func NewBalanceResponse(b int) *BalanceResponse {
+	return &BalanceResponse{
+		Balance: b,
+	}
+}
