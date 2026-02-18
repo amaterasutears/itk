@@ -2,12 +2,16 @@ package wallet
 
 import (
 	"context"
-	"fmt"
+	"time"
 
 	"github.com/Masterminds/squirrel"
+	"github.com/amaterasutears/itk/internal/model/transaction"
 	"github.com/amaterasutears/itk/internal/model/wallet"
+	"github.com/amaterasutears/itk/internal/storage/transactor"
 	"github.com/jmoiron/sqlx"
 )
+
+const table string = "wallets"
 
 var psql = squirrel.StatementBuilder.PlaceholderFormat(squirrel.Dollar)
 
@@ -22,8 +26,8 @@ func New(db *sqlx.DB) *Storage {
 }
 
 func (s *Storage) Insert(ctx context.Context, w *wallet.Wallet) (*wallet.Wallet, error) {
-	insertb := psql.Insert(w.TableName()).Columns(w.IDColumnName(), w.CreatedAtColumnName()).
-		Values(w.ID, w.CreatedAt).Suffix(fmt.Sprintf("RETURNING %s, %s", w.IDColumnName(), w.CreatedAtColumnName()))
+	insertb := psql.Insert(table).Columns("id", "balance", "created_at", "updated_at").
+		Values(w.ID, w.Balance, w.CreatedAt, w.UpdatedAt).Suffix("RETURNING id, created_at")
 
 	query, args, err := insertb.ToSql()
 	if err != nil {
@@ -38,4 +42,36 @@ func (s *Storage) Insert(ctx context.Context, w *wallet.Wallet) (*wallet.Wallet,
 	}
 
 	return &cw, nil
+}
+
+func (s *Storage) Update(ctx context.Context, t *transaction.Transaction, ua time.Time) error {
+	updateb := psql.Update(table)
+
+	switch t.OperationType {
+	case transaction.DepositOperationType:
+		updateb = updateb.Set("balance", squirrel.Expr("balance + ?", t.Amount)).
+			Set("updated_at", ua).Where(squirrel.Eq{"id": t.WalletID})
+	case transaction.WithdrawOperationType:
+		updateb = updateb.Set("balance", squirrel.Expr("balance - ?", t.Amount)).
+			Set("updated_at", ua).Where(
+			squirrel.And{
+				squirrel.Eq{"id": t.WalletID},
+				squirrel.GtOrEq{"balance": t.Amount},
+			},
+		)
+	default:
+		return transaction.ErrInvalidOperationType
+	}
+
+	query, args, err := updateb.ToSql()
+	if err != nil {
+		return err
+	}
+
+	_, err = transactor.Executor(ctx, s.db).ExecContext(ctx, query, args...)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

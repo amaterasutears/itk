@@ -3,17 +3,20 @@ package router
 import (
 	"net/http"
 
+	"github.com/amaterasutears/itk/internal/http/handler/transaction"
 	"github.com/amaterasutears/itk/internal/http/handler/wallet"
 	"github.com/labstack/echo/v4"
 )
 
 type Router struct {
 	w *wallet.Handler
+	t *transaction.Handler
 }
 
-func New(w *wallet.Handler) *Router {
+func New(w *wallet.Handler, t *transaction.Handler) *Router {
 	return &Router{
 		w: w,
+		t: t,
 	}
 }
 
@@ -27,4 +30,6 @@ func (r *Router) Register(g *echo.Group) {
 	apiv1g := g.Group("/api/v1")
 	// wallets
 	apiv1g.POST("/wallets", r.w.Create)
+	// transactions
+	apiv1g.POST("/transactions", r.t.Create)
 }

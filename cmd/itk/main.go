@@ -9,11 +9,15 @@ import (
 
 	"github.com/amaterasutears/itk/config"
 	sqlc "github.com/amaterasutears/itk/internal/client/sql"
+	transaction_handler "github.com/amaterasutears/itk/internal/http/handler/transaction"
 	wallet_handler "github.com/amaterasutears/itk/internal/http/handler/wallet"
 	"github.com/amaterasutears/itk/internal/http/router"
 	"github.com/amaterasutears/itk/internal/http/server"
+	transaction_service "github.com/amaterasutears/itk/internal/service/transaction"
 	wallet_service "github.com/amaterasutears/itk/internal/service/wallet"
 	"github.com/amaterasutears/itk/internal/storage/migrator"
+	transaction_storage "github.com/amaterasutears/itk/internal/storage/transaction"
+	"github.com/amaterasutears/itk/internal/storage/transactor"
 	wallet_storage "github.com/amaterasutears/itk/internal/storage/wallet"
 )
 
@@ -52,11 +56,17 @@ func main() {
 		panic(err)
 	}
 
+	tactor := transactor.New(pgc.DB())
+
 	wstorage := wallet_storage.New(pgc.DB())
 	wservice := wallet_service.New(wstorage)
 	whandler := wallet_handler.New(wservice)
 
-	r := router.New(whandler)
+	tstorage := transaction_storage.New(pgc.DB())
+	tservice := transaction_service.New(wstorage, tstorage, tactor)
+	thandler := transaction_handler.New(tservice)
+
+	r := router.New(whandler, thandler)
 
 	srv := server.New(r, &c.Server)
 
