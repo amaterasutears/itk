@@ -1,0 +1,46 @@
+services:
+  postgres:
+    image: postgres:16
+    ports:
+      - ${POSTGRES_PORT}:${POSTGRES_PORT}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+
+  app:
+    build: .
+    container_name: itk
+    ports:
+      - ${SERVER_PORT}:${SERVER_PORT}
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      POSTGRES_SSL_MODE: ${POSTGRES_SSL_MODE}
+      POSTGRES_PING_TIMEOUT_SEC: ${POSTGRES_PING_TIMEOUT_SEC}
+      POSTGRES_MAX_OPEN_CONNS: ${POSTGRES_MAX_OPEN_CONNS}
+      POSTGRES_IDLE_CONNS: ${POSTGRES_IDLE_CONNS}
+      POSTGRES_CONN_MAX_LIFETIME: ${POSTGRES_CONN_MAX_LIFETIME}
+      POSTGRES_CONN_MAX_IDLE_TIME: ${POSTGRES_CONN_MAX_IDLE_TIME}
+      SERVER_PORT: ${SERVER_PORT}
+      SERVER_SHUTDOWN_TIMEOUT_SEC: ${SERVER_SHUTDOWN_TIMEOUT_SEC}
+      MIGRATOR_TIMEOUT_SEC: ${MIGRATOR_TIMEOUT_SEC}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
