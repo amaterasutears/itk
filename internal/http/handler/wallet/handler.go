@@ -1,7 +1,6 @@
 package wallet
 
 import (
-	"log"
 	"net/http"
 
 	wc "github.com/amaterasutears/itk/internal/contract/wallet"
@@ -21,7 +20,6 @@ func New(ws WalletService) *Handler {
 func (h *Handler) Create(c echo.Context) error {
 	w, err := h.ws.Create(c.Request().Context())
 	if err != nil {
-		log.Println(err)
 		return echo.NewHTTPError(http.StatusInternalServerError)
 	}
 

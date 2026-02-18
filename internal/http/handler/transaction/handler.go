@@ -1,7 +1,6 @@
 package transaction
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/amaterasutears/itk/internal/contract/transaction"
@@ -34,7 +33,6 @@ func (h *Handler) Create(c echo.Context) error {
 
 	err = h.ts.Create(c.Request().Context(), mtranasction.New(req.WalletID, mtranasction.OperationType(req.OperationType), req.Amount))
 	if err != nil {
-		log.Println(err)
 		return echo.NewHTTPError(http.StatusInternalServerError)
 	}
 
