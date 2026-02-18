@@ -3,6 +3,7 @@ package wallet
 import (
 	"time"
 
+	"github.com/amaterasutears/itk/internal/model/wallet"
 	"github.com/google/uuid"
 )
 
@@ -11,9 +12,9 @@ type CreateWalletResponse struct {
 	CreatedAt time.Time `json:"created_at"`
 }
 
-func NewCreateWalletResponse(id uuid.UUID, ca time.Time) *CreateWalletResponse {
+func NewCreateWalletResponse(w *wallet.Wallet) *CreateWalletResponse {
 	return &CreateWalletResponse{
-		ID:        id,
-		CreatedAt: ca,
+		ID:        w.ID,
+		CreatedAt: w.CreatedAt,
 	}
 }
