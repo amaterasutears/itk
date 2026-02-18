@@ -11,12 +11,7 @@ type Config struct {
 func Load() (*Config, error) {
 	var c Config
 
-	err := cleanenv.ReadConfig("./.env", &c)
-	if err != nil {
-		return nil, err
-	}
-
-	err = cleanenv.ReadEnv(&c)
+	err := cleanenv.ReadEnv(&c)
 	if err != nil {
 		return nil, err
 	}
