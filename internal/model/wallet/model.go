@@ -13,10 +13,8 @@ type Wallet struct {
 	UpdatedAt time.Time `db:"updated_at"`
 }
 
-func New(id uuid.UUID, ca, ua time.Time) *Wallet {
+func New(id uuid.UUID) *Wallet {
 	return &Wallet{
-		ID:        id,
-		CreatedAt: ca,
-		UpdatedAt: ua,
+		ID: id,
 	}
 }
