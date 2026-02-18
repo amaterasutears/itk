@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/amaterasutears/itk/internal/contract/transaction"
-	mtranasction "github.com/amaterasutears/itk/internal/model/transaction"
 	"github.com/labstack/echo/v4"
 )
 
@@ -19,19 +18,19 @@ func New(ts TransactionService) *Handler {
 }
 
 func (h *Handler) Create(c echo.Context) error {
-	var req transaction.CreateTranasctionRequest
+	var requestBody transaction.CreateTranasctionRequest
 
-	err := c.Bind(&req)
+	err := c.Bind(&requestBody)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	err = req.Validate()
+	err = requestBody.Validate()
 	if err != nil {
 		return echo.NewHTTPError(http.StatusUnprocessableEntity, err.Error())
 	}
 
-	err = h.ts.Create(c.Request().Context(), mtranasction.New(req.WalletID, mtranasction.OperationType(req.OperationType), req.Amount))
+	err = h.ts.Create(c.Request().Context(), requestBody.ToModel())
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError)
 	}

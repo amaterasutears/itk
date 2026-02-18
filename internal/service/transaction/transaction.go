@@ -2,7 +2,6 @@ package transaction
 
 import (
 	"context"
-	"time"
 
 	"github.com/amaterasutears/itk/internal/model/transaction"
 )
@@ -22,12 +21,8 @@ func New(ws WalletStorage, ts TransactionStorage, t Transactor) *Service {
 }
 
 func (s *Service) Create(ctx context.Context, t *transaction.Transaction) error {
-	now := time.Now().UTC()
-
-	t.CreatedAt = now
-
 	return s.t.WithinTransaction(ctx, func(ctx context.Context) error {
-		err := s.ws.Update(ctx, t, now)
+		err := s.ws.Update(ctx, t)
 		if err != nil {
 			return err
 		}

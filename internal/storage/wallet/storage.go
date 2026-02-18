@@ -2,7 +2,6 @@ package wallet
 
 import (
 	"context"
-	"time"
 
 	"github.com/Masterminds/squirrel"
 	"github.com/amaterasutears/itk/internal/model/transaction"
@@ -44,16 +43,16 @@ func (s *Storage) Insert(ctx context.Context, w *wallet.Wallet) (*wallet.Wallet,
 	return &cw, nil
 }
 
-func (s *Storage) Update(ctx context.Context, t *transaction.Transaction, ua time.Time) error {
+func (s *Storage) Update(ctx context.Context, t *transaction.Transaction) error {
 	updateb := psql.Update(table)
 
 	switch t.OperationType {
 	case transaction.DepositOperationType:
 		updateb = updateb.Set("balance", squirrel.Expr("balance + ?", t.Amount)).
-			Set("updated_at", ua).Where(squirrel.Eq{"id": t.WalletID})
+			Set("updated_at", squirrel.Expr("NOW()")).Where(squirrel.Eq{"id": t.WalletID})
 	case transaction.WithdrawOperationType:
 		updateb = updateb.Set("balance", squirrel.Expr("balance - ?", t.Amount)).
-			Set("updated_at", ua).Where(
+			Set("updated_at", squirrel.Expr("NOW()")).Where(
 			squirrel.And{
 				squirrel.Eq{"id": t.WalletID},
 				squirrel.GtOrEq{"balance": t.Amount},

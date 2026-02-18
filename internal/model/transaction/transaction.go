@@ -19,11 +19,3 @@ type Transaction struct {
 	Amount        int           `db:"amount"`
 	CreatedAt     time.Time     `db:"created_at"`
 }
-
-func New(wid uuid.UUID, otype OperationType, amount int) *Transaction {
-	return &Transaction{
-		WalletID:      wid,
-		OperationType: otype,
-		Amount:        amount,
-	}
-}

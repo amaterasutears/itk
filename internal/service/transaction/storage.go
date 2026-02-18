@@ -2,13 +2,12 @@ package transaction
 
 import (
 	"context"
-	"time"
 
 	"github.com/amaterasutears/itk/internal/model/transaction"
 )
 
 type WalletStorage interface {
-	Update(ctx context.Context, t *transaction.Transaction, ua time.Time) error
+	Update(ctx context.Context, t *transaction.Transaction) error
 }
 
 type TransactionStorage interface {

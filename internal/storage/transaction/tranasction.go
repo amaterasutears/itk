@@ -31,7 +31,7 @@ func (s *Storage) Create(ctx context.Context, t *transaction.Transaction) error 
 		t.WalletID,
 		t.OperationType,
 		t.Amount,
-		t.CreatedAt,
+		squirrel.Expr("NOW()"),
 	)
 
 	query, args, err := insertb.ToSql()

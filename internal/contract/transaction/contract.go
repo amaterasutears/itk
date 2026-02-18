@@ -3,6 +3,7 @@ package transaction
 import (
 	"errors"
 
+	"github.com/amaterasutears/itk/internal/model/transaction"
 	"github.com/google/uuid"
 )
 
@@ -48,4 +49,12 @@ func (c *CreateTranasctionRequest) validateAmount() error {
 	}
 
 	return nil
+}
+
+func (c *CreateTranasctionRequest) ToModel() *transaction.Transaction {
+	return &transaction.Transaction{
+		WalletID:      c.WalletID,
+		OperationType: transaction.OperationType(c.OperationType),
+		Amount:        c.Amount,
+	}
 }
