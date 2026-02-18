@@ -26,7 +26,7 @@ func New(db *sqlx.DB) *Storage {
 
 func (s *Storage) Insert(ctx context.Context, w *wallet.Wallet) (*wallet.Wallet, error) {
 	insertb := psql.Insert(table).Columns("id", "balance", "created_at", "updated_at").
-		Values(w.ID, w.Balance, w.CreatedAt, w.UpdatedAt).Suffix("RETURNING id, created_at")
+		Values(w.ID, w.Balance, squirrel.Expr("NOW()"), w.UpdatedAt).Suffix("RETURNING id, created_at")
 
 	query, args, err := insertb.ToSql()
 	if err != nil {
