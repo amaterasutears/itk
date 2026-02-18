@@ -13,10 +13,32 @@ type Client struct {
 	db *sqlx.DB
 }
 
-func New(dataSourceName string) (*Client, error) {
+func New(dataSourceName string, opts ...Option) (*Client, error) {
 	db, err := sqlx.Open(driverName, dataSourceName)
 	if err != nil {
 		return nil, err
+	}
+
+	var opt options
+
+	for _, o := range opts {
+		o(&opt)
+	}
+
+	if opt.maxOpenConns != nil {
+		db.SetMaxOpenConns(*opt.maxOpenConns)
+	}
+
+	if opt.maxIdleConns != nil {
+		db.SetMaxIdleConns(*opt.maxIdleConns)
+	}
+
+	if opt.connMaxLifetime != nil {
+		db.SetConnMaxLifetime(*opt.connMaxLifetime)
+	}
+
+	if opt.connMaxIdleTime != nil {
+		db.SetConnMaxIdleTime(*opt.connMaxIdleTime)
 	}
 
 	return &Client{

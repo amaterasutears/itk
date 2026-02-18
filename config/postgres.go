@@ -47,13 +47,17 @@ func (s *SSLMode) UnmarshalText(text []byte) error {
 }
 
 type Postgres struct {
-	User        string  `env:"POSTGRES_USER" env-required`
-	Password    string  `env:"POSTGRES_PASSWORD" env-required`
-	DB          string  `env:"POSTGRES_DB" env-required`
-	Host        string  `env:"POSTGRES_HOST" env-required`
-	Port        int     `env:"POSTGRES_PORT" env-required`
-	SSLMode     SSLMode `env:"POSTGRES_SSL_MODE" env-required`
-	PingTimeout int     `env:"POSTGRES_PING_TIMEOUT_SEC" env-default:"5"`
+	User               string  `env:"POSTGRES_USER" env-required`
+	Password           string  `env:"POSTGRES_PASSWORD" env-required`
+	DB                 string  `env:"POSTGRES_DB" env-required`
+	Host               string  `env:"POSTGRES_HOST" env-required`
+	Port               int     `env:"POSTGRES_PORT" env-required`
+	SSLMode            SSLMode `env:"POSTGRES_SSL_MODE" env-required`
+	PingTimeout        int     `env:"POSTGRES_PING_TIMEOUT_SEC" env-default:"5"`
+	MaxOpenConns       int     `env:"POSTGRES_MAX_OPEN_CONNS" env-default:"40"`
+	MaxIdleConns       int     `env:"POSTGRES_IDLE_CONNS" env-default:"40"`
+	ConnMaxLifetimeMin int     `env:"POSTGRES_CONN_MAX_LIFETIME" env-default:"30"`
+	ConnMaxIdleTimeMin int     `env:"POSTGRES_CONN_MAX_IDLE_TIME" env-default:"5"`
 }
 
 func (p *Postgres) DataSourceName() string {

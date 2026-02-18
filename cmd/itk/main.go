@@ -30,7 +30,13 @@ func main() {
 		panic(err)
 	}
 
-	pgc, err := sqlc.New(c.DataSourceName())
+	pgc, err := sqlc.New(
+		c.DataSourceName(),
+		sqlc.WithMaxOpenConns(c.Postgres.MaxOpenConns),
+		sqlc.WithMaxIdleConns(c.Postgres.MaxIdleConns),
+		sqlc.WithConnMaxLifetime(time.Duration(c.Postgres.ConnMaxLifetimeMin)*time.Minute),
+		sqlc.WithConnMaxIdleTime(time.Duration(c.Postgres.ConnMaxIdleTimeMin)*time.Minute),
+	)
 	if err != nil {
 		panic(err)
 	}
