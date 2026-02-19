@@ -9,6 +9,8 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
+const table string = "transactions"
+
 var psql = squirrel.StatementBuilder.PlaceholderFormat(squirrel.Dollar)
 
 type Storage struct {
@@ -22,7 +24,7 @@ func New(db *sqlx.DB) *Storage {
 }
 
 func (s *Storage) Create(ctx context.Context, t *transaction.Transaction) error {
-	insertb := psql.Insert("transactions").Columns(
+	insertb := psql.Insert(table).Columns(
 		"wallet_id",
 		"operation_type",
 		"amount",
